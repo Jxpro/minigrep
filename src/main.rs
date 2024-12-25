@@ -1,9 +1,6 @@
-mod config;
-use std::fs;
 use std::env;
 use std::process;
-use std::error::Error;
-use crate::config::Config;
+use minigrep::{Config, run};
 
 fn main() {
     // rust 中的泛型函数指定类型的方式 (turbofish)
@@ -24,10 +21,4 @@ fn main() {
         println!("Application error: {e}");
         process::exit(1);
     }
-}
-
-pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    let content: String = fs::read_to_string(config.filename)?;
-    println!("With text:\n{}", content);
-    Ok(())
 }
