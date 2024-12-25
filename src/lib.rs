@@ -13,6 +13,9 @@
  * 二者都只能使用公有 API。这有助于你设计一个好的 API；你不仅仅是作者，也是用户！
  */
 
+#[cfg(test)]
+mod tests;
+
 mod config;
 use std::fs;
 use std::error::Error;
@@ -21,6 +24,22 @@ pub use crate::config::Config;
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let content: String = fs::read_to_string(config.filename)?;
-    println!("With text:\n{}", content);
+
+    for line in search(&config.query, &content) {
+        println!("{line}");
+    }
+
     Ok(())
+}
+
+pub fn search<'a> (query: &str, contents: &'a str) -> Vec<&'a str> {
+    let mut results = Vec::new();
+
+    for line in contents.lines(){
+        if line.contains(query){
+            results.push(line);
+        }
+    }
+
+    results
 }
