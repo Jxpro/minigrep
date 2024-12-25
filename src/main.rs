@@ -1,5 +1,9 @@
+mod config;
 use std::fs;
 use std::env;
+use std::process;
+use std::error::Error;
+use crate::config::Config;
 
 fn main() {
     // rust 中的泛型函数指定类型的方式 (turbofish)
@@ -7,19 +11,23 @@ fn main() {
     // let args_turbofish = env::args().collect::<Vec<String>>();
     // dbg!(args_turbofish);
 
-    let args_iter: env::Args = env::args();
-    dbg!(&args_iter);
-    let args: Vec<String> = args_iter.collect();
-    dbg!(&args);
-    println!("args = {args:?}");
-    println!("args = {args:#?}");
+    let args: Vec<String> = env::args().collect();
+    let config: Config = Config::build(&args).unwrap_or_else(|err| {
+        println!("Problem parsing arguments: {err}");
+        process::exit(1);
+    });
 
-    let query: &String = &args[1];
-    let filename: &String = &args[2];
-    println!("Searching for {}", query);
-    println!("In file {}", filename);
+    println!("Searching for {}", config.query);
+    println!("In file {}", config.filename);
 
-    let content: String = fs::read_to_string(filename)
-        .expect("Something went wrong reading the file");
-    print!("With text:\n{}", content);
+    if let Err(e) = run(config) {
+        println!("Application error: {e}");
+        process::exit(1);
+    }
+}
+
+pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
+    let content: String = fs::read_to_string(config.filename)?;
+    println!("With text:\n{}", content);
+    Ok(())
 }
