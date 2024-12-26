@@ -9,8 +9,13 @@ fn main() {
     // dbg!(args_turbofish);
 
     // 可以简单使用 _ 占位符代替具体的 String 类型，但是 Vec<_> 不能省略，因为还可能是 HashSet<_> 等其他类型
-    let args: Vec<_> = env::args().collect();
-    let config: Config = Config::build(&args).unwrap_or_else(|err| {
+    // let args: Vec<_> = env::args().collect();
+    // let config: Config = Config::build(&args).unwrap_or_else(|err| {
+    //     eprintln!("Problem parsing arguments: {err}");
+    //     process::exit(1);
+    // });
+
+    let config: Config = Config::build(env::args()).unwrap_or_else(|err| {
         eprintln!("Problem parsing arguments: {err}");
         process::exit(1);
     });
