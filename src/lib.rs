@@ -39,6 +39,10 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 }
 
 pub fn search<'a> (query: &str, contents: &'a str) -> Vec<&'a str> {
+    // 我目前认为：函数返回值与其中涉及到函数参数，需要标注一样的生命周期，这条规则我认为编译器可以根据函数内部代码进行推断。
+    // 所以简单理解手动标注的目的，是为了方便编译器可以在只知道函数签名的情况下，对函数参数和返回值外部的生命周期进行检查。
+    // 并且我暂时没有发现不可判定的代码案例，即它们除生命周期标注不同以外，其余函数体内容完全相同，且均可编译通过。
+
     let mut results = Vec::new();
 
     for line in contents.lines(){
@@ -51,6 +55,9 @@ pub fn search<'a> (query: &str, contents: &'a str) -> Vec<&'a str> {
 }
 
 pub fn search_case_insensitive<'a> (query: &str, contents: &'a str) -> Vec<&'a str> {
+    // 注意无法之前如下复用 search 函数，因为 to_lowercase 会返回一个新的 String，存在生命周期问题
+    // search(&query.to_lowercase(), &contents.to_lowercase())
+
     let query = query.to_lowercase();
     let mut results = Vec::new();
 
